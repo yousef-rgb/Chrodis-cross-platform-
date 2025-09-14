@@ -1,68 +1,39 @@
-name: Build Chrodis App
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-jobs:
-  build-windows:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pyinstaller
-    
-    - name: Create env file
-      run: |
-        echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" > .env
-    
-    - name: Build Windows app
-      run: |
-        python build.py
-    
-    - name: Upload Windows artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: Chrodis-Windows
-        path: dist/
-
-  build-android:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install flet
-    
-    - name: Create env file
-      run: |
-        echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" > .env
-    
-    - name: Build Android APK
-      run: |
-        python build_apk.py
-    
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: Chrodis-Android
-        path: build/apk/
+build-android:
+  runs-on: ubuntu-latest
+  steps:
+  - uses: actions/checkout@v4
+  
+  - name: Set up Python
+    uses: actions/setup-python@v4
+    with:
+      python-version: '3.10'
+  
+  - name: Install dependencies
+    run: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+      pip install flet
+  
+  - name: Create env file
+    run: |
+      echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" > .env
+  
+  - name: Create Flet config
+    run: |
+      echo '{
+        "name": "Chrodis",
+        "description": "Chrodis Medical Assistant",
+        "org": "com.youssef.chrodis",
+        "icon": "image.ico",
+        "python": "main.py"
+      }' > flet.config.json
+  
+  - name: Build Android APK
+    run: |
+      python build_apk.py
+  
+  - name: Upload APK artifact
+    uses: actions/upload-artifact@v4
+    with:
+      name: Chrodis-Android
+      path: build/apk/
