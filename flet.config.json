@@ -1,0 +1,7 @@
+{
+  "name": "Chrodis",
+  "description": "Chrodis Medical Assistant",
+  "org": "com.youssef.chrodis",
+  "icon": "image.ico",
+  "python": "main.py"
+}
